@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eresume"
+version = "0.1.0"
+description = "E-Resume: an original AI-assisted job search CLI — profile, preferences, job matching, HR roleplay, strategy advice. 零依赖，Python 标准库即可运行。"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Artie" }]
+keywords = ["job-search", "resume", "ai", "career", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+
+[project.scripts]
+eresume = "eresume.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["eresume*"]
+
+[tool.setuptools.package-data]
+eresume = ["prompts/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

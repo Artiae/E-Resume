@@ -1,0 +1,61 @@
+%% 中文求职信模板 - [YOUR_NAME]
+%% 使用方法：
+%%   1. 将本文件复制为 cover_letters/cover_<company>_<role>.tex 并填写内容
+%%   2. 用 xelatex 编译：xelatex cover_example_cn.tex
+%%   3. Windows 默认 fontset=windows；MacTeX 改 fontset=mac；Linux 常用 fontset=ubuntu/fandol
+%%   4. 可通过 /add-template 注册本模板（源扩展名 .tex，编译命令 xelatex），
+%%      让 /apply 自动使用（见 06-cover-letter-templates.md 中文模板一节）
+%%
+%% 结构与英文版 cover.cls 信件一致：称呼 → 开头段（岗位+来源+为什么）→
+%% 主体段（匹配点，可含列表）→ 结尾段（期待+行动）→ 落款
+
+\documentclass[11pt,a4paper]{ctexart}
+\usepackage[UTF8,fontset=windows]{ctex}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries 求职信}\\[6pt]
+{\normalsize [你的姓名] \quad [联系电话] \quad [邮箱]} \\[2pt]
+{\small [申请职位] · [公司名称]}
+\end{center}
+
+\vspace{1.5em}
+
+尊敬的[招聘负责人姓名 / HR 团队]：
+
+\hspace{2em}您好！我是[一句话自我介绍：学校/公司 + 领域 + 核心经验]。从[岗位来源渠道：BOSS直聘 /
+官网 / 内推 / 宣讲会…]了解到贵公司正在招聘[职位名称]，[为什么对这个岗位和公司感兴趣 ——
+具体到公司的业务/产品/团队，不要空泛]。
+
+\hspace{2em}我的背景与这个岗位的匹配点主要有：
+
+\begin{itemize}
+  \item \textbf{[匹配点 1]}：[对应经历与成果，量化优先，如"曾在[公司]主导[项目]，实现[数字]"]；
+  \item \textbf{[匹配点 2]}：[对应经历与成果]；
+  \item \textbf{[匹配点 3]}：[对应经历与成果；如有能力差距，诚实说明学习路径]。
+\end{itemize}
+
+\hspace{2em}[可选：一段关于软实力/文化契合/职业目标的说明，与 02-behavioral-profile.md 一致。]
+比如：我认同[公司理念/文化点]，希望在[方向]上长期深耕。
+
+\hspace{2em}随信附上我的简历，期待有机会与您进一步交流。如需任何补充材料，请随时联系我
+（[电话/邮箱/微信]）。感谢您抽出时间审阅！
+
+\vspace{2em}
+
+此致\\[4pt]
+敬礼！
+
+\vspace{2.5em}
+\begin{flushright}
+[你的姓名]\\
+[日期，如 2026 年 X 月 X 日]
+\end{flushright}
+
+\end{document}

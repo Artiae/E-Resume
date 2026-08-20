@@ -1,0 +1,178 @@
+%% 中文简历模板 - [YOUR_NAME]
+%% 基于 moderncv (banking style) + ctex 的中文简历。
+%% 使用方法：
+%%   1. 将本文件复制为 cv/main_<company>_<role>.tex 并按需裁剪
+%%   2. 用 xelatex 编译（ctex 需要 xeCJK；不要用 pdflatex）
+%%      xelatex main_example_cn.tex
+%%   3. Windows 上默认 fontset=windows（SimSun/SimHei）；
+%%      若你使用 MacTeX 改为 fontset=mac，Linux 常用 fontset=ubuntu 或 fontset=fandol
+%%   4. 通过 /add-template 注册本模板可让 /apply 自动使用（见 05-cv-templates.md 中文模板一节）
+
+\documentclass[11pt,a4paper,sans]{moderncv}
+\usepackage[UTF8,fontset=windows]{ctex}
+\moderncvstyle{banking}
+\moderncvcolor{blue}
+
+% 让姓名与章节标题渲染为 moderncv 蓝色（同英文模板的处理）
+\renewcommand*{\namefont}{\fontsize{34}{36}\bfseries\upshape}
+\colorlet{firstnamecolor}{color1}
+\colorlet{lastnamecolor}{color1}
+\colorlet{namecolor}{color1}
+\renewcommand*{\sectionstyle}[1]{{\sectionfont\color{color1}#1}}
+
+\AtEndPreamble{\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+    pdftitle={[你的姓名] - 简历},
+    pdfpagemode=UseNone,
+}}
+\usepackage[scale=0.80]{geometry}
+\usepackage{import}
+
+% 个人信息
+\name{[姓]}{[名]}
+\address{[你的地址, 城市, 省份]}{}{}
+\phone[mobile]{[+XX XXXXXXXXXX]}
+\email{[your.email@example.com]}
+\extrainfo{\href{[https://linkedin.com/in/your-profile]}{LinkedIn}, \href{[https://github.com/your-username]}{GitHub}}
+
+\begin{document}
+
+\makecvtitle
+
+% ============================================================
+%     个人简介 (PROFILE STATEMENT)
+% ============================================================
+
+\vspace{6pt}
+\small{[写 3-5 行针对目标岗位的个人简介。突出你的独特优势。示例："拥有 [X] 年 [领域] 经验的 [岗位]，
+精通 [核心技术]，主导过 [关键成果]。善于将 [能力] 转化为可量化的业务价值，曾在 [公司] 实现
+[具体数字/成果]。期待在 [目标行业] 领域继续深耕。"]}
+
+% ============================================================
+%     核心技能 (CORE COMPETENCIES)
+% ============================================================
+
+\section{核心技能}
+\vspace{1pt}
+\begin{itemize}
+
+\item \textbf{[技能类别 1]}：[具体技能、框架、工具，尽量具体]
+
+\item \textbf{[技能类别 2]}：[具体技能、框架、工具]
+
+\item \textbf{[技能类别 3]}：[具体技能、框架、工具]
+
+\item \textbf{[技能类别 4]}：[领域专长、方法论]
+
+\item \textbf{[技能类别 5]}：[工具、平台、软件]
+
+\end{itemize}
+
+% ============================================================
+%     工作经历 (PROFESSIONAL EXPERIENCE)
+% ============================================================
+
+\section{工作经历}
+\vspace{3pt}
+\begin{itemize}
+
+% --- 最近一份工作 ---
+\item{\cventry{[YYYY年X月-至今]}{[职位名称]}{[公司名称]}{[城市, 省份]}{}{\vspace{1pt}
+\begin{itemize}
+    \item [成果或职责 1 —— 尽量具体、量化，如"主导XX系统重构，QPS 提升 40%"]
+    \item [成果或职责 2]
+    \item [成果或职责 3]
+    \item [成果或职责 4]
+\end{itemize}}}
+
+\vspace{3pt}
+
+% --- 上一份工作 ---
+\item{\cventry{[YYYY年X月-YYYY年X月]}{[职位名称]}{[公司名称]}{[城市, 省份]}{}{\vspace{1pt}
+\begin{itemize}
+    \item [成果或职责 1]
+    \item [成果或职责 2]
+    \item [成果或职责 3]
+\end{itemize}}}
+
+\vspace{3pt}
+
+% --- 更早的工作 ---
+\item{\cventry{[YYYY年X月-YYYY年X月]}{[职位名称]}{[公司名称]}{[城市, 省份]}{}{\vspace{1pt}
+\begin{itemize}
+    \item [成果或职责 1]
+    \item [成果或职责 2]
+\end{itemize}}}
+
+\end{itemize}
+
+% ============================================================
+%     实习经历 (INTERNSHIPS, 可选)
+% ============================================================
+
+\section{实习经历}
+\vspace{1pt}
+\begin{itemize}
+
+\item{\cventry{[YYYY年X月-YYYY年X月]}{[实习岗位]}{[公司名称]}{[城市]}{}{\vspace{1pt}
+\begin{itemize}
+    \item [成果或职责 1]
+    \item [成果或职责 2]
+\end{itemize}}}
+
+\end{itemize}
+
+% ============================================================
+%     教育背景 (EDUCATION)
+% ============================================================
+
+\section{教育背景}
+\vspace{1pt}
+\begin{itemize}
+
+\item{\cventry{[YYYY-YYYY]}{[学位] · [专业]}{[学校名称]}{[城市, 省份]}{}{\vspace{1pt}
+毕业论文：《[论文题目]》[简要描述研究内容。]
+}}
+
+\vspace{3pt}
+
+\item{\cventry{[YYYY-YYYY]}{[学位] · [专业]}{[学校名称]}{[城市, 省份]}{}{\vspace{1pt}
+[简要描述或主要课程。]
+}}
+
+\end{itemize}
+
+% ============================================================
+%     语言能力 (LANGUAGES)
+% ============================================================
+
+\section{语言能力}
+\vspace{1pt}
+\begin{itemize}
+\item 中文（母语）, [英语]（[流利/商务水平/ CET-6 ]）, [其他语言]（[水平]）。
+\end{itemize}
+
+% ============================================================
+%     荣誉与奖项 (HONORS AND AWARDS, 可选)
+% ============================================================
+
+\section{荣誉与奖项}
+\vspace{1pt}
+\begin{itemize}
+\item{\textbf{[奖项名称]} —— [赛事/组织]（[年份]）。}
+\end{itemize}
+
+% ============================================================
+%     自我评价 (REFERENCES 或 个人说明)
+% ============================================================
+
+\section{自我评价}
+\vspace{1pt}
+\begin{itemize}
+\item{[可写 2-3 句关于工作风格、价值观与职业目标的说明，参考 02-behavioral-profile.md。]}
+\end{itemize}
+
+\end{document}

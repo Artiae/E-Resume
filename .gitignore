@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# 个人数据（绝不上传）
+.eresume/
+*.demo*/
+eresume_data/
+
+# 编译产物
+*.pdf
+*.aux
+*.log
+*.out
+
+# 编辑器/系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 测试临时
+.pytest_cache/
