@@ -46,8 +46,15 @@ def cmd_init(_: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_profile(_: argparse.Namespace) -> int:
-    run_profile_wizard()
+def cmd_profile(args: argparse.Namespace) -> int:
+    resume_text = ""
+    if args.from_file:
+        try:
+            resume_text = open(args.from_file, encoding="utf-8").read()
+        except OSError as e:
+            _print(f"无法读取文件: {e}")
+            return 1
+    run_profile_wizard(resume_text=resume_text)
     return 0
 
 
@@ -313,7 +320,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command")
 
     sub.add_parser("init", help="初始化数据目录")
-    sub.add_parser("profile", help="建立/编辑求职者档案")
+    p = sub.add_parser("profile", help="建立/编辑求职者档案（支持粘贴已有简历导入）")
+    p.add_argument("--from", dest="from_file", default="", help="直接导入简历文件（txt/md），跳过交互选择")
     p = sub.add_parser("prefs", help="设置求职偏好")
     p.add_argument("--section", choices=["employment", "salary", "company", "industry", "location", "workload", "growth"])
 
