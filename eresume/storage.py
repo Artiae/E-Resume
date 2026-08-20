@@ -112,7 +112,7 @@ def upsert_application(app: Application) -> bool:
 
 def init_workspace() -> None:
     """初始化数据目录与空文件。"""
-    d = data_dir()
+    d = data_dir(create=True)
     (d / "templates").mkdir(parents=True, exist_ok=True)
     for name in FILES:
         p = _path(name)

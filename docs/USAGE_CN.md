@@ -125,19 +125,35 @@ python -m eresume report                  # HTML 报告（浏览器打开）
 
 ## 四、接入 AI（可选，推荐）
 
-```bash
-# 任意 OpenAI 兼容接口
-export ERESUME_API_KEY=sk-xxxx
-export ERESUME_BASE_URL=https://api.openai.com/v1    # 可换 DeepSeek/通义/Ollama 地址
-export ERESUME_MODEL=gpt-4o-mini
+支持所有 **OpenAI 兼容接口**，主流厂商均已提供，一套客户端通吃：
 
-# 之后所有 AI 命令自动走 LLM：
+```bash
+# 方式一：按厂商预设一键切换（推荐）
+export ERESUME_PROVIDER=deepseek
+export ERESUME_API_KEY=sk-xxxx
+
+# 方式二：手动指定（任意 OpenAI 兼容端点）
+export ERESUME_BASE_URL=https://api.deepseek.com/v1
+export ERESUME_MODEL=deepseek-chat
+export ERESUME_API_KEY=sk-xxxx
+
+# 查看当前配置与全部预设
+python -m eresume config
+```
+
+内置厂商预设（`ERESUME_PROVIDER` 取值）：`openai`、`deepseek`（中文性价比高）、
+`qwen`（通义千问）、`kimi`（月之暗面）、`zhipu`（智谱 GLM，有免费额度）、`minimax`、
+`hunyuan`（腾讯混元）、`ernie`（百度千帆）、`ollama`（本地免费）、`vllm`（本地部署）。
+
+配置后 AI 命令自动走 LLM：
+
+```bash
 python -m eresume cover 字节跳动 "Python开发实习生" --mode auto
 python -m eresume hr "..." --mode-llm auto
 python -m eresume advice --mode auto
 ```
 
-Windows（PowerShell）用 `$env:ERESUME_API_KEY="sk-..."`。
+Windows（PowerShell）用 `$env:ERESUME_PROVIDER="deepseek"`、`$env:ERESUME_API_KEY="sk-..."`。
 
 ## 五、实习僧爬虫说明
 

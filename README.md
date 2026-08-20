@@ -79,14 +79,37 @@ eresume advice
 
 ## 🔌 接入 AI（可选）
 
-```bash
-# OpenAI 兼容接口（也支持 DeepSeek / 通义 / Ollama 等）
-export ERESUME_API_KEY=sk-...
-export ERESUME_BASE_URL=https://api.openai.com/v1   # 默认
-export ERESUME_MODEL=gpt-4o-mini                    # 默认
+支持市面上**所有 OpenAI 兼容接口**——主流厂商基本都已提供兼容端点，一套客户端通吃：
 
-# 之后 AI 命令自动走 LLM：
-python -m eresume cover 字节跳动 "Python开发实习生" --mode auto
+```bash
+# 方式一：按厂商预设一键切换（推荐）
+export ERESUME_PROVIDER=deepseek      # 见下方厂商表
+export ERESUME_API_KEY=sk-...
+
+# 方式二：手动指定（任意 OpenAI 兼容端点）
+export ERESUME_BASE_URL=https://api.deepseek.com/v1
+export ERESUME_MODEL=deepseek-chat
+export ERESUME_API_KEY=sk-...
+
+# 查看当前配置与全部预设
+python -m eresume config
+```
+
+| 厂商 | `ERESUME_PROVIDER` | 默认模型 | 说明 |
+|------|-------------------|----------|------|
+| OpenAI | `openai` | gpt-4o-mini | 官方 |
+| DeepSeek | `deepseek` | deepseek-chat | 中文性价比高 |
+| 阿里通义千问 | `qwen` | qwen-plus | DashScope 兼容模式 |
+| 月之暗面 Kimi | `kimi` | moonshot-v1-8k | |
+| 智谱 GLM | `zhipu` | glm-4-flash | 有免费额度 |
+| MiniMax | `minimax` | abab6.5s-chat | |
+| 腾讯混元 | `hunyuan` | hunyuan-lite | 兼容模式 |
+| 百度千帆 | `ernie` | ernie-3.5-8k | v2 兼容端点 |
+| Ollama（本地） | `ollama` | qwen2.5:7b | 免费，本地运行 |
+| vLLM（本地） | `vllm` | Qwen2.5-7B | 本地部署 |
+
+配置后 AI 命令自动走 LLM：`python -m eresume cover 字节跳动 "Python开发实习生" --mode auto`。
+未配置时使用**提示词模式**：输出结构化提示词，粘贴到任意 AI 对话即可。
 python -m eresume advice --mode auto
 ```
 

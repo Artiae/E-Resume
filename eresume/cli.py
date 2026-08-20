@@ -278,6 +278,33 @@ def cmd_report(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_config(args: argparse.Namespace) -> int:
+    from .config import data_dir, llm_config, PROVIDERS, provider_preset
+    import os
+    cfg = llm_config()
+    key_ok = bool(cfg["api_key"])
+    _print("\n═══ E-Resume 配置 ═══")
+    _print(f"  数据目录: {data_dir()}")
+    _print(f"  LLM 供应商: {cfg['provider']}" + (f"（{cfg['note']}）" if cfg["note"] else ""))
+    _print(f"  Base URL: {cfg['base_url']}")
+    _print(f"  模型: {cfg['model']}")
+    _print(f"  API Key: {'✅ 已配置 (' + cfg['api_key'][:6] + '...)' if key_ok else '❌ 未配置（AI 命令将使用提示词模式）'}")
+    if args.provider:
+        preset = provider_preset(args.provider)
+        if not preset:
+            _print(f"\n未知厂商: {args.provider}。可选: {', '.join(PROVIDERS)}")
+            return 1
+        _print(f"\n[{args.provider}] 推荐配置（{preset['note']}）:")
+        _print(f"  set ERESUME_PROVIDER={args.provider}")
+        _print(f"  set ERESUME_API_KEY=你的Key")
+    else:
+        _print("\n常见厂商预设（用 set/export ERESUME_PROVIDER=名称 切换）:")
+        for name, p in PROVIDERS.items():
+            _print(f"  {name:<10} {p['note']:<30} 默认模型: {p['model']}")
+    _print("")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="eresume",
@@ -352,6 +379,9 @@ def build_parser() -> argparse.ArgumentParser:
     au.add_argument("--status", default="")
     au.add_argument("--note", default="")
 
+    p = sub.add_parser("config", help="查看配置与 LLM 厂商预设")
+    p.add_argument("--provider", default="")
+
     sub.add_parser("status", help="投递概览")
     sub.add_parser("report", help="生成 HTML 报告")
 
@@ -379,6 +409,7 @@ def main(argv: list | None = None) -> int:
         "apps": cmd_apps,
         "status": cmd_status,
         "report": cmd_report,
+        "config": cmd_config,
     }.get(args.command)
     if not handler:
         parser.print_help()

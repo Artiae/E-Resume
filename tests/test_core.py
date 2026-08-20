@@ -89,3 +89,28 @@ def test_channel_find_alias():
     assert c2 and c2["id"] == "bosszhipin"
     c3 = find_channel("牛客职")
     assert c3 and c3["id"] == "nowcoder"
+
+
+# ---------- LLM 厂商预设 ----------
+
+from eresume.config import provider_preset, llm_config
+
+
+def test_provider_presets():
+    d = provider_preset("deepseek")
+    assert d["base_url"] == "https://api.deepseek.com/v1"
+    assert d["model"] == "deepseek-chat"
+    q = provider_preset("通义")
+    assert q and q["base_url"].startswith("https://dashscope")
+    assert provider_preset("不存在的厂商") is None
+
+
+def test_llm_config_prefers_env_over_preset():
+    import os
+    os.environ["ERESUME_PROVIDER"] = "kimi"
+    os.environ["ERESUME_BASE_URL"] = "https://example.com/v1"
+    cfg = llm_config()
+    assert cfg["base_url"] == "https://example.com/v1"
+    assert cfg["model"] == "moonshot-v1-8k"
+    os.environ.pop("ERESUME_PROVIDER", None)
+    os.environ.pop("ERESUME_BASE_URL", None)
