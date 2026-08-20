@@ -7,6 +7,11 @@
 零第三方依赖（仅 Python 标准库），AI 能力按需接入任意 OpenAI 兼容接口；
 没有 API Key 也能用「提示词模式」正常工作。
 
+> ### 📖 使用说明
+> - **[`docs/USAGE_CN.md`](docs/USAGE_CN.md)** — 完整中文教程：安装、建档、偏好设置、每日求职流程、AI 接入、常见问题
+> - 每个命令也自带帮助：`python -m eresume <命令> --help`
+> - 下方「🚀 快速开始」是 30 秒上手版
+
 ```
 eresume profile ──► 简历档案（本地 JSON）
 eresume prefs   ──► 求职偏好（雇佣类型/薪资/公司类型/筛选条件）
