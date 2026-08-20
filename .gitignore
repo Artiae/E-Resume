@@ -10,6 +10,7 @@ venv/
 .eresume/
 *.demo*/
 eresume_data/
+userdata/
 
 # 编译产物
 *.pdf
