@@ -76,18 +76,49 @@ def provider_preset(name: str) -> dict | None:
     return None
 
 
+def file_config() -> dict:
+    """读取本地配置文件（userdata/config.json），存用户持久化的 LLM 设置。"""
+    import json
+    p = data_dir() / "config.json"
+    if not p.exists():
+        return {}
+    try:
+        cfg = json.loads(p.read_text(encoding="utf-8"))
+        return cfg if isinstance(cfg, dict) else {}
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def save_file_config(cfg: dict) -> None:
+    """写入本地配置文件。"""
+    import json
+    p = data_dir(create=True) / "config.json"
+    p.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def llm_config() -> dict:
-    """解析 LLM 配置：显式环境变量优先，其次厂商预设。"""
-    provider = os.environ.get("ERESUME_PROVIDER", "").strip()
+    """解析 LLM 配置。优先级：环境变量 > 本地配置文件 > 厂商预设默认。
+
+    环境变量：ERESUME_PROVIDER / ERESUME_API_KEY / ERESUME_BASE_URL / ERESUME_MODEL
+    配置文件：`eresume config set-provider <名>` / `eresume config set-key <key>` 写入
+    """
+    fc = file_config()
+    provider = os.environ.get("ERESUME_PROVIDER", "").strip() or str(fc.get("provider", "")).strip()
     preset = provider_preset(provider) if provider else None
-    base_url = os.environ.get("ERESUME_BASE_URL", "").strip() or (preset["base_url"] if preset else "https://api.openai.com/v1")
-    model = os.environ.get("ERESUME_MODEL", "").strip() or (preset["model"] if preset else "gpt-4o-mini")
+    base_url = (os.environ.get("ERESUME_BASE_URL", "").strip()
+                or str(fc.get("base_url", "")).strip()
+                or (preset["base_url"] if preset else "https://api.openai.com/v1"))
+    model = (os.environ.get("ERESUME_MODEL", "").strip()
+             or str(fc.get("model", "")).strip()
+             or (preset["model"] if preset else "gpt-4o-mini"))
+    api_key = os.environ.get("ERESUME_API_KEY", "").strip() or str(fc.get("api_key", "")).strip()
     return {
-        "api_key": os.environ.get("ERESUME_API_KEY", "").strip(),
+        "api_key": api_key,
         "base_url": base_url.rstrip("/"),
         "model": model,
         "provider": provider or "openai(默认)",
         "note": preset["note"] if preset else "",
+        "from_file": bool(fc.get("api_key") or fc.get("provider")),
     }
 
 

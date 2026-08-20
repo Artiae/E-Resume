@@ -353,3 +353,13 @@ def run_prefs_wizard(section: str = "") -> None:
 
     save_preferences(pr)
     print("\n✅ 求职偏好已保存。这些偏好将成为匹配与过滤的依据。\n")
+
+    # 下一步路线图：回答"填完了然后呢"
+    print("── 接下来怎么做 ──")
+    print("  1️⃣ 收集岗位:   `eresume job scrape -k <关键词> --city <城市> --save`")
+    print("                  或粘贴 JD: `eresume job add \"<职位描述>\"`")
+    print("  2️⃣ 评估匹配:   `eresume match <岗位ID或JD文本>`  ← 你的偏好会在此生效")
+    print("  3️⃣ 生成材料:   `eresume cover <公司> \"<岗位>\"` 和 `eresume resume`")
+    print("  4️⃣ 收到HR消息:  `eresume hr \"<HR的消息>\"`")
+    print("  5️⃣ 随时体检:   `eresume next` 查看进度与下一步\n")
+    print("  （也可以直接跑 `eresume next`，它会根据你的进度推荐该做的事）\n")

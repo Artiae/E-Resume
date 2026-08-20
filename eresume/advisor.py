@@ -64,3 +64,61 @@ def quick_checks(profile: Profile, prefs: Preferences) -> str:
         lines.append("  ✅ 档案与偏好已齐备")
     lines.append("")
     return "\n".join(lines)
+
+
+def next_steps(profile: Profile, prefs: Preferences) -> str:
+    """进度体检 + 下一步建议（回答"我该干什么"）。"""
+    from .storage import list_postings, list_applications
+
+    postings = list_postings()
+    apps = list_applications()
+    lines = ["\n═══ 你的求职进度 ═══", ""]
+
+    # 档案
+    profile_done = bool(profile.name and profile.skills_primary)
+    lines.append("【1. 简历档案】" + ("✅ 已完成" if profile_done else "⚠️ 未完成"))
+    if not profile_done:
+        lines.append("    下一步: `eresume profile`（有简历选 A 粘贴，没有选 B）")
+
+    # 偏好
+    prefs_done = bool(prefs.employment_types and (prefs.salary_floor or prefs.salary_monthly_min) and prefs.company_types)
+    lines.append("【2. 求职偏好】" + ("✅ 已完成" if prefs_done else "⚠️ 未完成"))
+    if not prefs_done:
+        missing = []
+        if not prefs.employment_types:
+            missing.append("雇佣类型")
+        if not prefs.salary_floor and not prefs.salary_monthly_min:
+            missing.append("薪资")
+        if not prefs.company_types:
+            missing.append("公司类型")
+        lines.append(f"    还差: {'、'.join(missing)} → `eresume prefs --section <对应项>` 或 `eresume prefs` 补全")
+
+    # 岗位
+    lines.append(f"【3. 岗位库】{'✅' if postings else '⚠️'} 当前 {len(postings)} 个岗位")
+    if not postings:
+        lines.append("    下一步: 搜实习 `eresume job scrape -k python --city 北京 --save`")
+        lines.append("           或粘贴 JD `eresume job add \"<职位描述>\"`")
+
+    # 投递
+    lines.append(f"【4. 投递记录】{'✅' if apps else '⚠️'} 当前 {len(apps)} 条")
+    if not apps:
+        lines.append("    下一步: 投递后用 `eresume apps add 公司 \"岗位\" --channel bosszhipin` 记录")
+
+    # 明确的下一个动作
+    lines.append("")
+    if not profile_done:
+        lines.append("👉 你现在该做: `eresume profile`")
+    elif not prefs_done:
+        lines.append("👉 你现在该做: `eresume prefs`（把筛选条件补全，含薪资/公司类型）")
+    elif not postings:
+        lines.append("👉 你现在该做: `eresume job scrape -k <关键词> --city <城市> --save` 或 `eresume job add \"<JD>\"`")
+    elif not apps:
+        p0 = postings[0]
+        lines.append(f"👉 你现在该做: `eresume match {p0.id}` 评估岗位，然后 `eresume cover {p0.company or '公司'} \"{p0.title or '岗位'}\"` 生成求职信")
+    else:
+        lines.append("👉 你现在该做: 继续投递（`eresume job scrape`）→ 匹配 → 生成材料；")
+        lines.append("   收到 HR 消息用 `eresume hr \"<消息>\"`，面试用 `eresume interview <公司>`")
+
+    lines.append("")
+    lines.append("更多命令见 `eresume --help`，完整教程见 docs/USAGE_CN.md")
+    return "\n".join(lines)

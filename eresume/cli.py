@@ -285,29 +285,63 @@ def cmd_report(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_next(_: argparse.Namespace) -> int:
+    from .storage import load_profile, load_preferences
+    _print(advisor.next_steps(load_profile(), load_preferences()))
+    return 0
+
+
 def cmd_config(args: argparse.Namespace) -> int:
-    from .config import data_dir, llm_config, PROVIDERS, provider_preset
+    from .config import data_dir, llm_config, PROVIDERS, provider_preset, save_file_config
     import os
+
+    # 子命令：set-provider / set-key
+    if args.action == "set-provider":
+        preset = provider_preset(args.value)
+        if not preset:
+            _print(f"未知厂商: {args.value}。可选: {', '.join(PROVIDERS)}")
+            return 1
+        cfg = llm_config()
+        cfg["provider"] = args.value.lower()
+        save_file_config({"provider": cfg["provider"], "api_key": cfg.get("api_key", "")})
+        _print(f"✅ 已切换供应商: {args.value}（{preset['note']}）")
+        _print(f"   Base URL: {preset['base_url']}   默认模型: {preset['model']}")
+        _print(f"   下一步: `eresume config set-key <你的Key>` 填入 API Key")
+        return 0
+    if args.action == "set-key":
+        key = args.value.strip()
+        if not key.startswith("sk-") and not key:
+            _print("Key 格式看起来不对（通常以 sk- 开头），确认后重试")
+            return 1
+        cfg = llm_config()
+        save_file_config({"provider": cfg["provider"], "api_key": key})
+        _print("✅ API Key 已保存到本地配置文件（不会上传）")
+        return 0
+
     cfg = llm_config()
     key_ok = bool(cfg["api_key"])
     _print("\n═══ E-Resume 配置 ═══")
     _print(f"  数据目录: {data_dir()}")
-    _print(f"  LLM 供应商: {cfg['provider']}" + (f"（{cfg['note']}）" if cfg["note"] else ""))
+    src = "（本地配置文件）" if cfg.get("from_file") else "（默认）"
+    _print(f"  LLM 供应商: {cfg['provider']}{src}" + (f"（{cfg['note']}）" if cfg["note"] else ""))
     _print(f"  Base URL: {cfg['base_url']}")
     _print(f"  模型: {cfg['model']}")
     _print(f"  API Key: {'✅ 已配置 (' + cfg['api_key'][:6] + '...)' if key_ok else '❌ 未配置（AI 命令将使用提示词模式）'}")
+    _print("\n  切换供应商: `eresume config set-provider zhipu`（或 qwen/deepseek/kimi/openai...）")
+    _print("  填入 Key:   `eresume config set-key sk-你的Key`")
     if args.provider:
         preset = provider_preset(args.provider)
         if not preset:
             _print(f"\n未知厂商: {args.provider}。可选: {', '.join(PROVIDERS)}")
             return 1
-        _print(f"\n[{args.provider}] 推荐配置（{preset['note']}）:")
-        _print(f"  set ERESUME_PROVIDER={args.provider}")
-        _print(f"  set ERESUME_API_KEY=你的Key")
+        _print(f"\n[{args.provider}] {preset['note']}:")
+        _print(f"  `eresume config set-provider {args.provider}`")
+        _print(f"  `eresume config set-key <你的Key>`")
     else:
-        _print("\n常见厂商预设（用 set/export ERESUME_PROVIDER=名称 切换）:")
+        _print("\n常见厂商预设:")
         for name, p in PROVIDERS.items():
-            _print(f"  {name:<10} {p['note']:<30} 默认模型: {p['model']}")
+            free = "（有免费额度）" if name in ("zhipu", "qwen", "deepseek") else ""
+            _print(f"  {name:<10} {p['note']}{free}")
     _print("")
     return 0
 
@@ -387,8 +421,12 @@ def build_parser() -> argparse.ArgumentParser:
     au.add_argument("--status", default="")
     au.add_argument("--note", default="")
 
-    p = sub.add_parser("config", help="查看配置与 LLM 厂商预设")
+    p = sub.add_parser("config", help="查看配置 / 切换 LLM 厂商 / 设置 API Key")
+    p.add_argument("action", nargs="?", choices=["set-provider", "set-key"], default="")
+    p.add_argument("value", nargs="?", default="")
     p.add_argument("--provider", default="")
+
+    p = sub.add_parser("next", help="求职进度体检 + 下一步建议")
 
     sub.add_parser("status", help="投递概览")
     sub.add_parser("report", help="生成 HTML 报告")
@@ -418,6 +456,7 @@ def main(argv: list | None = None) -> int:
         "status": cmd_status,
         "report": cmd_report,
         "config": cmd_config,
+        "next": cmd_next,
     }.get(args.command)
     if not handler:
         parser.print_help()

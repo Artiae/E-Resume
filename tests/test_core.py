@@ -114,3 +114,34 @@ def test_llm_config_prefers_env_over_preset():
     assert cfg["model"] == "moonshot-v1-8k"
     os.environ.pop("ERESUME_PROVIDER", None)
     os.environ.pop("ERESUME_BASE_URL", None)
+
+
+def test_file_config_roundtrip():
+    """config set-provider/set-key 的持久化：写配置文件后 llm_config 读取。"""
+    import json, os
+    from eresume.config import save_file_config, file_config, data_dir
+    from eresume.models import Preferences
+    # 用临时目录隔离
+    tmp = os.path.join(os.path.dirname(__file__), "..", ".testcfg")
+    os.environ["ERESUME_DIR"] = tmp
+    save_file_config({"provider": "zhipu", "api_key": "sk-test"})
+    fc = file_config()
+    assert fc["provider"] == "zhipu"
+    assert fc["api_key"] == "sk-test"
+    cfg = llm_config()
+    assert cfg["provider"] == "zhipu"
+    assert cfg["base_url"] == "https://open.bigmodel.cn/api/paas/v4"
+    assert cfg["model"] == "glm-4-flash"
+    # 清理
+    import shutil
+    shutil.rmtree(tmp, ignore_errors=True)
+    os.environ.pop("ERESUME_DIR", None)
+
+
+def test_next_steps_guidance():
+    """next 命令的进度体检：空档案提示先建档。"""
+    from eresume.advisor import next_steps
+    from eresume.models import Profile, Preferences
+    out = next_steps(Profile(), Preferences())
+    assert "eresume profile" in out
+    assert "求职进度" in out
