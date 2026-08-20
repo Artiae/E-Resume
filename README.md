@@ -166,6 +166,8 @@ python tests/run_tests.py     # 零依赖运行器，29 个测试
 | `eresume interview <公司>` | 面试准备包 |
 | `eresume advice [--section 1-5]` | 求职策略建议 |
 | `eresume channels [渠道名|--plan]` | 投递渠道攻略与计划 |
+| `eresume apply [--open]` | **今日投递计划**：预填各渠道搜索链接 + 粘贴即用话术（`--open` 自动开浏览器） |
+| `eresume next` | **进度体检**：告诉你现在该做什么 |
 | `eresume apps add/list/update` | 投递记录 |
 | `eresume status` | 投递概览 |
 | `eresume report` | HTML 报告 |

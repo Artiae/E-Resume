@@ -285,6 +285,44 @@ def cmd_report(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_apply(args: argparse.Namespace) -> int:
+    from .storage import load_profile, load_preferences
+    from . import applyplan
+    profile = load_profile()
+    prefs = load_preferences()
+    if not profile.name:
+        _print("⚠ 请先建档: `eresume profile`")
+        return 1
+    if not prefs.employment_types:
+        _print("⚠ 请先设置求职偏好: `eresume prefs`")
+        return 1
+
+    roles = profile.target_roles or []
+    if args.role:
+        roles = [args.role] + [r for r in roles if r != args.role]
+    if not roles:
+        _print("⚠ 档案里没有目标岗位，用 `eresume profile` 补充，或 `eresume apply --role <岗位>` 指定")
+        return 1
+
+    city = args.city or (prefs.cities[0] if prefs.cities else "")
+    channels = applyplan.pick_channels(prefs)
+    if args.channel:
+        channels = [c for c in channels if c == args.channel] or [args.channel]
+    urls = [applyplan.build_url(ch, roles[0], city) for ch in channels]
+
+    if args.open:
+        applyplan.open_urls(urls)
+        _print("✅ 已尝试在浏览器打开以下渠道（如未弹出请手动复制链接）:")
+        for ch, u in zip(channels, urls):
+            _print(f"  {ch}: {u}")
+    else:
+        _print(applyplan.build_plan(profile, prefs))
+        if roles[1:]:
+            _print(f"  其他岗位方向: {', '.join(roles[1:])}")
+        _print("\n提示: 想自动打开浏览器请加 `--open`，指定城市加 `--city 北京`，指定渠道加 `--channel bosszhipin`")
+    return 0
+
+
 def cmd_next(_: argparse.Namespace) -> int:
     from .storage import load_profile, load_preferences
     _print(advisor.next_steps(load_profile(), load_preferences()))
@@ -428,6 +466,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("next", help="求职进度体检 + 下一步建议")
 
+    p = sub.add_parser("apply", help="今日投递计划：预填各渠道搜索链接 + 粘贴即用话术")
+    p.add_argument("--role", default="", help="指定目标岗位（覆盖档案默认）")
+    p.add_argument("--city", default="", help="指定城市（覆盖偏好）")
+    p.add_argument("--channel", default="", help="只生成指定渠道（bosszhipin/zhilian/51job/lagou/liepin/shixiseng/nowcoder/soe/linkedin）")
+    p.add_argument("--open", action="store_true", help="自动用浏览器打开各渠道搜索页")
+
     sub.add_parser("status", help="投递概览")
     sub.add_parser("report", help="生成 HTML 报告")
 
@@ -457,6 +501,7 @@ def main(argv: list | None = None) -> int:
         "report": cmd_report,
         "config": cmd_config,
         "next": cmd_next,
+        "apply": cmd_apply,
     }.get(args.command)
     if not handler:
         parser.print_help()

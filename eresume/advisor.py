@@ -102,7 +102,7 @@ def next_steps(profile: Profile, prefs: Preferences) -> str:
     # 投递
     lines.append(f"【4. 投递记录】{'✅' if apps else '⚠️'} 当前 {len(apps)} 条")
     if not apps:
-        lines.append("    下一步: 投递后用 `eresume apps add 公司 \"岗位\" --channel bosszhipin` 记录")
+        lines.append("    下一步: 用 `eresume apply` 打开各渠道开始投递，投完 `eresume apps add` 记录")
 
     # 明确的下一个动作
     lines.append("")
@@ -116,9 +116,11 @@ def next_steps(profile: Profile, prefs: Preferences) -> str:
         p0 = postings[0]
         lines.append(f"👉 你现在该做: `eresume match {p0.id}` 评估岗位，然后 `eresume cover {p0.company or '公司'} \"{p0.title or '岗位'}\"` 生成求职信")
     else:
-        lines.append("👉 你现在该做: 继续投递（`eresume job scrape`）→ 匹配 → 生成材料；")
+        lines.append("👉 你现在该做: 继续投递（`eresume apply --open` 打开各渠道）→ 匹配 → 生成材料；")
         lines.append("   收到 HR 消息用 `eresume hr \"<消息>\"`，面试用 `eresume interview <公司>`")
 
     lines.append("")
+    lines.append("【开始投递】档案和偏好都填好后，直接运行 `eresume apply --open` ——")
+    lines.append("  它会用你的岗位和城市打开 BOSS直聘/智联/实习僧等渠道的搜索页，并给你粘贴即用的打招呼话术。")
     lines.append("更多命令见 `eresume --help`，完整教程见 docs/USAGE_CN.md")
     return "\n".join(lines)

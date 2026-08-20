@@ -92,7 +92,28 @@ python -m eresume cover 字节跳动 "Python开发实习生"
 `cover` 默认输出**提示词模式**：复制提示词粘贴到任意 AI 对话（Claude/ChatGPT/DeepSeek）
 即可得到定制求职信。配置 API Key 后直接输出结果（见下文"接入 AI"）。
 
-### 4. 处理 HR 消息
+### 4. 开始投递（半自动）
+
+档案和偏好填好后，直接生成**今日投递计划**：
+
+```bash
+python -m eresume apply                # 生成计划：预填好的渠道链接 + 粘贴即用话术
+python -m eresume apply --open         # 自动用浏览器打开各渠道搜索页（按你的岗位/城市预填）
+python -m eresume apply --city 上海    # 指定城市
+python -m eresume apply --channel bosszhipin   # 只生成某渠道
+```
+
+每个渠道配好了**粘贴即用的话术**（含你的名字/技能/目标岗位）。投完记录：
+
+```bash
+python -m eresume apps add 公司 "岗位" --channel bosszhipin --score 75
+```
+
+> 为什么是半自动？BOSS直聘/智联等平台有登录墙、验证码和反爬，全自动投递会违反平台条款
+> 并导致封号；自动替你跟 HR 回复也有风险。E-Resume 负责把"去哪个渠道、搜什么、怎么说"全部
+> 准备好，最后一步确认由你完成——安全且高效。
+
+### 5. 处理 HR 消息
 
 ```bash
 python -m eresume hr "您好，看了您的简历，我们觉得您很适合这个岗位，方便明天下午3点视频面试吗？"
@@ -104,7 +125,7 @@ python -m eresume hr "您好，看了您的简历，我们觉得您很适合这�
 
 配置 API Key 后直接生成回复。
 
-### 5. 面试准备
+### 6. 面试准备
 
 ```bash
 python -m eresume interview 字节跳动 --role "Python开发实习生" --stage "初面"
@@ -113,14 +134,14 @@ python -m eresume interview 字节跳动 --role "Python开发实习生" --stage 
 输出面试准备提示词：可能的问题清单（含 HR 轮）、STAR 映射、一致性问题、薪资谈判要点、
 该问面试官的问题。
 
-### 6. 策略建议
+### 7. 策略建议
 
 ```bash
 python -m eresume advice              # 完整策略
 python -m eresume advice --section 2  # 只看期望校准
 ```
 
-### 7. 投递渠道
+### 8. 投递渠道
 
 ```bash
 python -m eresume channels                # 渠道速查
@@ -128,7 +149,7 @@ python -m eresume channels 内推           # 某渠道攻略
 python -m eresume channels --plan         # 本周投递计划
 ```
 
-### 8. 记录与复盘
+### 9. 记录与复盘
 
 ```bash
 python -m eresume apps add 字节跳动 "Python开发实习生" --channel bosszhipin --score 75
