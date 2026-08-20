@@ -85,8 +85,8 @@ def build_greeting(profile: Profile, role: str, channel_id: str = "bosszhipin") 
     school = profile.education[0].get("school", "") if profile.education else ""
     days = f"，每周可到岗{profile.internship_days_per_week}天" if getattr(profile, "internship_days_per_week", 0) else ""
     greeting = tpl.format(name=name, status=status, skills=skills, role=role, school=school, days=days)
-    # 清理未填充的残留占位（如「每周可到岗天」）
-    return greeting.replace("每周可到岗天", "")
+    # 清理未填充的残留占位（如「每周可到岗天」）与双逗号
+    return greeting.replace("每周可到岗天", "").replace("，，", "，")
 
 
 def pick_channels(prefs: Preferences) -> list[str]:

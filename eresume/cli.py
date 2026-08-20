@@ -183,6 +183,9 @@ def cmd_hr(args: argparse.Namespace) -> int:
     else:
         _print(hrbot.analyze_message(args.message))
         _print(hrbot.handle_draft(args.message, profile, prefs, posting, channel=args.channel or "default", mode=args.mode_llm or "auto"))
+    _print("\n────────────────────────────────────────────")
+    _print("⚠ 以上为草稿。发送前请核对语气与信息，确认无误后由你手动发出；本工具绝不代发。")
+    _print("  薪资/到岗等敏感回复请参考谈判协议，见 `eresume hr --help` 或 docs/USAGE_CN.md")
     return 0
 
 
@@ -321,6 +324,25 @@ def cmd_apply(args: argparse.Namespace) -> int:
             _print(f"  其他岗位方向: {', '.join(roles[1:])}")
         _print("\n提示: 想自动打开浏览器请加 `--open`，指定城市加 `--city 北京`，指定渠道加 `--channel bosszhipin`")
     return 0
+
+
+def cmd_autopilot(args: argparse.Namespace) -> int:
+    from .storage import load_profile, load_preferences
+    from . import autopilot, applyplan
+    profile = load_profile()
+    prefs = load_preferences()
+    if not profile.name:
+        _print("⚠ 请先建档: `eresume profile`")
+        return 1
+    channel = args.channel or (applyplan.pick_channels(prefs) + ["bosszhipin"])[0]
+    keyword = args.keyword or (profile.target_roles[0] if profile.target_roles else "")
+    if not keyword:
+        _print("⚠ 需要目标岗位：`eresume autopilot --keyword <岗位> `，或在档案里设置 target_roles")
+        return 1
+    city = args.city or (prefs.cities[0] if prefs.cities else "")
+    if args.auto:
+        return autopilot.run_auto(channel, keyword, city, profile)
+    return autopilot.run_assist(channel, keyword, city, profile)
 
 
 def cmd_next(_: argparse.Namespace) -> int:
@@ -472,6 +494,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--channel", default="", help="只生成指定渠道（bosszhipin/zhilian/51job/lagou/liepin/shixiseng/nowcoder/soe/linkedin）")
     p.add_argument("--open", action="store_true", help="自动用浏览器打开各渠道搜索页")
 
+    p = sub.add_parser("autopilot", help="半自动投递（实验性）：风险确认 + 人工确认环，--auto 需 Selenium")
+    p.add_argument("--channel", default="", help="渠道（默认按偏好推荐）")
+    p.add_argument("--keyword", default="", help="岗位关键词（默认取档案目标岗位）")
+    p.add_argument("--city", default="", help="城市（默认取偏好）")
+    p.add_argument("--auto", action="store_true", help="自动模式（实验性，需安装 selenium）")
+
     sub.add_parser("status", help="投递概览")
     sub.add_parser("report", help="生成 HTML 报告")
 
@@ -502,6 +530,7 @@ def main(argv: list | None = None) -> int:
         "config": cmd_config,
         "next": cmd_next,
         "apply": cmd_apply,
+        "autopilot": cmd_autopilot,
     }.get(args.command)
     if not handler:
         parser.print_help()
